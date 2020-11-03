@@ -1,0 +1,7 @@
+{
+  "name": "Search Station",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
