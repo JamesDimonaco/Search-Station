@@ -4,7 +4,6 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  IonButton,
 } from "@ionic/react";
 import React from "react";
 import Games from "../components/Games";
@@ -20,11 +19,6 @@ const Home: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent scrollY={true} className="ion-padding">
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Blank</IonTitle>
-          </IonToolbar>
-        </IonHeader>
         <Games />
       </IonContent>
     </IonPage>
