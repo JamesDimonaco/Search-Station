@@ -1,18 +1,24 @@
-/* eslint-disable no-restricted-globals */
 import {
   useIonViewDidEnter,
   IonImg,
   IonCard,
   IonCardContent,
   IonCardHeader,
-  IonText,
   IonCardTitle,
   IonModal,
   IonButton,
   IonToolbar,
+  IonContent,
+  IonSearchbar,
+  IonItem,
+  IonList,
+  IonFooter,
+  IonRange,
+  IonLabel,
 } from "@ionic/react";
 import React, { useState } from "react";
 import axios from "axios";
+import ReactHtmlParser from "react-html-parser";
 
 export const Games: React.FC = () => {
   const [games, setGames] = useState([]);
@@ -43,18 +49,37 @@ export const Games: React.FC = () => {
               name: string;
               covers: { service_url: string };
             }) => (
-              <IonCard key={e.id}>
-                <IonImg src={e.covers.service_url} />
-                <IonCardHeader>
-                  <IonCardTitle>{e.name}</IonCardTitle>
-                  <IonCardTitle>Game platform: {e.platforms}</IonCardTitle>
-                </IonCardHeader>
-                <IonCardContent>
-                  <IonButton color="dark" onClick={() => setShowModal(true)}>
-                    READ MORE
-                  </IonButton>
-                </IonCardContent>
-              </IonCard>
+              <IonItem>
+                <IonCard key={e.id}>
+                  <IonImg src={e.covers.service_url} />
+                  <IonCardHeader>
+                    <IonCardTitle>{e.name}</IonCardTitle>
+                    <IonCardTitle> platform: {e.platforms}</IonCardTitle>
+                  </IonCardHeader>
+                  <IonCardContent>
+                    <IonButton color="dark" onClick={() => setShowModal(true)}>
+                      READ MORE
+                    </IonButton>
+                    <IonModal
+                      isOpen={showModal}
+                      swipeToClose={true}
+                      onDidDismiss={() => setShowModal(false)}
+                    >
+                      <IonContent className="ion-padding">
+                        <h1>{e.name}</h1>
+                        <IonImg src={e.covers.service_url} />
+                        {ReactHtmlParser(e.description)}
+                        <IonButton
+                          color="dark"
+                          onClick={() => setShowModal(false)}
+                        >
+                          READ LESS
+                        </IonButton>
+                      </IonContent>
+                    </IonModal>
+                  </IonCardContent>
+                </IonCard>
+              </IonItem>
             )
           )
         );
@@ -90,15 +115,33 @@ export const Games: React.FC = () => {
         <IonButton color="dark" slot="start" onClick={() => backPage()}>
           Back
         </IonButton>
-        <IonText className="ion-padding">
-          {" "}
-          You are currently on page:{page}
-        </IonText>
         <IonButton color="dark" slot="end" onClick={() => nextPage()}>
           Next
         </IonButton>
+        <IonSearchbar
+          placeholder="Search PS4 Games"
+          value={searchText}
+          onIonChange={(e) => setSearchText(e.detail.value!)}
+          showCancelButton="focus"
+        ></IonSearchbar>
+        <IonItem>
+          <IonRange
+            min={1}
+            max={5}
+            snaps={true}
+            pin={true}
+            value={parseInt(page)}
+            onIonChange={(e) => {
+              setPage(e.detail.value.toString());
+              getGames();
+            }}
+          />
+        </IonItem>
+        <IonItem>
+          <IonLabel>Page: {page}</IonLabel>
+        </IonItem>
       </IonToolbar>
-      {games}
+      <IonList>{games}</IonList>
       <IonToolbar>
         <IonButton color="dark" slot="start" onClick={() => backPage()}>
           Back
@@ -107,6 +150,9 @@ export const Games: React.FC = () => {
           Next
         </IonButton>
       </IonToolbar>
+      <IonFooter>
+        <IonToolbar>Search Text: {searchText ?? "(none)"}</IonToolbar>
+      </IonFooter>
     </div>
   );
 };

@@ -19,7 +19,7 @@ const Home: React.FC = () => {
           <IonTitle>Welcome to Search Station</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent className="ion-padding">
+      <IonContent scrollY={true} className="ion-padding">
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">Blank</IonTitle>
