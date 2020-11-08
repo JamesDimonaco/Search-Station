@@ -62,7 +62,7 @@ export const Games: React.FC = () => {
                 </IonCardHeader>
                 <IonCardContent>
                   <IonButton color="dark" onClick={() => openModal(game)}>
-                    READ MORE
+                    SEE MORE
                   </IonButton>
                 </IonCardContent>
               </IonCard>
@@ -151,14 +151,13 @@ export const Games: React.FC = () => {
           onDidDismiss={() => closeModal()}
         >
           <IonContent className="ion-padding">
+            <IonButton color="dark" onClick={() => closeModal()}>
+              SEE LESS
+            </IonButton>
             <h1>{modalContent?.name}</h1>
 
-            <IonImg src={modalContent?.covers.service_url} />
+            <IonImg className="img" src={modalContent?.covers.service_url} />
             {ReactHtmlParser(modalContent ? modalContent.description : "")}
-
-            <IonButton color="dark" onClick={() => closeModal()}>
-              READ LESS
-            </IonButton>
           </IonContent>
         </IonModal>
       </IonList>
