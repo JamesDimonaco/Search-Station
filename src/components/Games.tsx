@@ -16,6 +16,7 @@ import {
   IonRange,
   IonLabel,
 } from "@ionic/react";
+import "./Games.css";
 import React, { useState } from "react";
 import axios from "axios";
 import ReactHtmlParser from "react-html-parser";
@@ -49,9 +50,9 @@ export const Games: React.FC = () => {
               name: string;
               covers: { service_url: string };
             }) => (
-              <IonItem>
+              <IonItem className="item">
                 <IonCard key={e.id}>
-                  <IonImg src={e.covers.service_url} />
+                  <IonImg className="img" src={e.covers.service_url} />
                   <IonCardHeader>
                     <IonCardTitle>{e.name}</IonCardTitle>
                     <IonCardTitle> platform: {e.platforms}</IonCardTitle>
@@ -110,7 +111,7 @@ export const Games: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="ion-padding">
       <IonToolbar>
         <IonButton color="dark" slot="start" onClick={() => backPage()}>
           Back
@@ -141,7 +142,7 @@ export const Games: React.FC = () => {
           <IonLabel>Page: {page}</IonLabel>
         </IonItem>
       </IonToolbar>
-      <IonList>{games}</IonList>
+      <IonList className="grid">{games}</IonList>
       <IonToolbar>
         <IonButton color="dark" slot="start" onClick={() => backPage()}>
           Back
