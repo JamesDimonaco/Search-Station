@@ -39,6 +39,9 @@ export const Games: React.FC = () => {
 
   const [searchText, setSearchText] = useState("");
 
+
+  const [totalPages, setTotalPages] = useState(0);
+
   useIonViewDidEnter(() => {
     getGames();
   });
@@ -51,11 +54,13 @@ export const Games: React.FC = () => {
       method: "GET",
     })
       .then((response) => {
+        setTotalPages(response.data.meta.pagination['Total-Pages']);
+
         return setGames(
           response.data.games.map((game: IGame) => (
             <IonItem className="item">
               <IonCard key={game.id}>
-                <IonImg className="img" src={game.covers.service_url} />
+                <IonImg className="img" src={game.covers?.service_url} />
                 <IonCardHeader>
                   <IonCardTitle>{game.name}</IonCardTitle>
                   <IonCardTitle> platform: {game.platforms}</IonCardTitle>
@@ -70,7 +75,8 @@ export const Games: React.FC = () => {
           ))
         );
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log(e)
         alert("error ");
       });
   };
@@ -129,7 +135,7 @@ export const Games: React.FC = () => {
         <IonItem>
           <IonRange
             min={1}
-            max={5}
+            max={totalPages}
             snaps={true}
             pin={true}
             value={parseInt(page)}
