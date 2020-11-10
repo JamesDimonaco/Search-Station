@@ -12,9 +12,11 @@ import {
   IonSearchbar,
   IonItem,
   IonList,
-  IonFooter,
-  IonRange,
-  IonLabel,
+  IonCardSubtitle,
+  IonHeader,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
+  IonTitle,
 } from "@ionic/react";
 import "./Games.css";
 import React, { useState } from "react";
@@ -30,12 +32,15 @@ interface IGame {
 }
 
 export const Games: React.FC = () => {
-  const [games, setGames] = useState([]);
+  const [games, setGames] = useState<any[]>([]);
   const [page, setPage] = useState("1");
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState<IGame | undefined>(
     undefined
   );
+  const [connectGames, setConnectGames] = useState([]);
+
+  let gameArr: any[] = [];
 
   const [searchText, setSearchText] = useState("");
 
@@ -43,37 +48,79 @@ export const Games: React.FC = () => {
     getGames();
   });
 
-  const getGames = () => {
+  const getGames = (event?: any) => {
     const url = `https://games.directory/api/v1/play_station/games?&page=${page}`;
 
-    axios({
-      url: url,
-      method: "GET",
-    })
-      .then((response) => {
-        return setGames(
-          response.data.games.map((game: IGame) => (
-            <IonItem className="item">
-              <IonCard key={game.id}>
-                <IonImg className="img" src={game.covers.service_url} />
-                <IonCardHeader>
-                  <IonCardTitle>{game.name}</IonCardTitle>
-                  <IonCardTitle> platform: {game.platforms}</IonCardTitle>
-                </IonCardHeader>
-                <IonCardContent>
-                  <IonButton color="dark" onClick={() => openModal(game)}>
-                    SEE MORE
-                  </IonButton>
-                </IonCardContent>
-              </IonCard>
-            </IonItem>
-          ))
-        );
+    if (event) {
+      axios({
+        url: url,
+        method: "GET",
       })
-      .catch(() => {
-        alert("error ");
-      });
+        .then((response) => {
+          setGames((games) => [
+            ...games,
+            response.data.games.map((game: IGame) => (
+              <IonItem key={game.id} className="item">
+                <IonCard>
+                  <IonImg className="img" src={game.covers.service_url} />
+                  <IonCardHeader>
+                    <IonCardTitle>{game.name}</IonCardTitle>
+                    <IonCardTitle> platform: {game.platforms}</IonCardTitle>
+                    <IonCardSubtitle>
+                      {ReactHtmlParser(game.description.slice(0, 500))}
+                    </IonCardSubtitle>
+                  </IonCardHeader>
+                  <IonCardContent>
+                    <IonButton color="dark" onClick={() => openModal(game)}>
+                      READ MORE
+                    </IonButton>
+                  </IonCardContent>
+                </IonCard>
+              </IonItem>
+            )),
+          ]);
+        })
+        .catch(() => {
+          alert("error ");
+        });
+    } else {
+      axios({
+        url: url,
+        method: "GET",
+      })
+        .then((response) => {
+          return setGames(
+            response.data.games.map((game: IGame) => (
+              <IonItem key={game.id} className="item">
+                <IonCard>
+                  <IonImg className="img" src={game.covers.service_url} />
+                  <IonCardHeader>
+                    <IonCardTitle>{game.name}</IonCardTitle>
+                    <IonCardTitle> platform: {game.platforms}</IonCardTitle>
+                    <IonCardSubtitle>
+                      {ReactHtmlParser(game.description.slice(0, 500))}
+                    </IonCardSubtitle>
+                  </IonCardHeader>
+                  <IonCardContent>
+                    <IonButton color="dark" onClick={() => openModal(game)}>
+                      READ MORE
+                    </IonButton>
+                  </IonCardContent>
+                </IonCard>
+              </IonItem>
+            ))
+          );
+        })
+        .catch(() => {
+          alert("error ");
+        });
+    }
+    let changePage = parseInt(page);
+    let newPage = ++changePage;
+    let newPageToString = newPage.toString();
+    setPage(newPageToString);
   };
+  console.log(games);
 
   const openModal = (game: IGame) => {
     setModalContent({
@@ -111,67 +158,67 @@ export const Games: React.FC = () => {
     }
   };
 
-  return (
-    <div className="ion-padding">
-      <IonToolbar>
-        <IonButton color="dark" slot="start" onClick={() => backPage()}>
-          Back
-        </IonButton>
-        <IonButton color="dark" slot="end" onClick={() => nextPage()}>
-          Next
-        </IonButton>
-        <IonSearchbar
-          placeholder="Search PS4 Games"
-          value={searchText}
-          onIonChange={(e) => setSearchText(e.detail.value!)}
-          showCancelButton="focus"
-        ></IonSearchbar>
-        <IonItem>
-          <IonRange
-            min={1}
-            max={5}
-            snaps={true}
-            pin={true}
-            value={parseInt(page)}
-            onIonChange={(e) => {
-              setPage(e.detail.value.toString());
-              getGames();
-            }}
-          />
-        </IonItem>
-        <IonItem>
-          <IonLabel>Page: {page}</IonLabel>
-        </IonItem>
-      </IonToolbar>
-      <IonList className="grid">{games}</IonList>
-      <IonList>
-        <IonModal
-          isOpen={showModal}
-          swipeToClose={true}
-          onDidDismiss={() => closeModal()}
-        >
-          <IonContent className="ion-padding">
-            <IonButton color="dark" onClick={() => closeModal()}>
-              SEE LESS
-            </IonButton>
-            <h1>{modalContent?.name}</h1>
+  const loadMoreGames = (event: any) => {
+    let changePage = parseInt(page);
+    let newPage = ++changePage;
+    let newPageToString = newPage.toString();
+    setPage(newPageToString);
+    getGames(event);
+    setTimeout(() => {
+      event.target.complete();
+    }, 1000);
+  };
 
-            <IonImg className="img" src={modalContent?.covers.service_url} />
-            {ReactHtmlParser(modalContent ? modalContent.description : "")}
-          </IonContent>
-        </IonModal>
-      </IonList>
-      <IonToolbar>
-        <IonButton color="dark" slot="start" onClick={() => backPage()}>
-          Back
-        </IonButton>
-        <IonButton color="dark" slot="end" onClick={() => nextPage()}>
-          Next
-        </IonButton>
-      </IonToolbar>
-      <IonFooter>
-        <IonToolbar>Search Text: {searchText ?? "(none)"}</IonToolbar>
-      </IonFooter>
+  return (
+    <div className="">
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>Welcome to Search Station</IonTitle>
+        </IonToolbar>
+
+        <IonToolbar>
+          <IonSearchbar
+            placeholder="Search PS4 Games"
+            value={searchText}
+            onIonChange={(e) => setSearchText(e.detail.value!)}
+            showCancelButton="focus"
+          ></IonSearchbar>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent
+        fullscreen
+        onIonScrollStart={loadMoreGames}
+        className="ion-padding"
+      >
+        <IonList className="grid">{games}</IonList>
+        <IonList>
+          <IonModal
+            isOpen={showModal}
+            swipeToClose={true}
+            onDidDismiss={() => closeModal()}
+          >
+            <IonContent className="ion-padding">
+              <IonButton color="dark" onClick={() => closeModal()}>
+                READ LESS
+              </IonButton>
+              <h1>{modalContent?.name}</h1>
+
+              <IonImg className="img" src={modalContent?.covers.service_url} />
+              {ReactHtmlParser(modalContent ? modalContent.description : "")}
+            </IonContent>
+          </IonModal>
+        </IonList>
+
+        <IonInfiniteScroll
+          onIonInfinite={(event) => loadMoreGames(event)}
+          threshold="900px"
+        >
+          <IonInfiniteScrollContent
+            loadingSpinner="bubbles"
+            loadingText="Loading more games.."
+          ></IonInfiniteScrollContent>
+        </IonInfiniteScroll>
+      </IonContent>
     </div>
   );
 };
