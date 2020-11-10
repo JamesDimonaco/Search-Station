@@ -38,9 +38,6 @@ export const Games: React.FC = () => {
   const [modalContent, setModalContent] = useState<IGame | undefined>(
     undefined
   );
-  const [connectGames, setConnectGames] = useState([]);
-
-  let gameArr: any[] = [];
 
   const [searchText, setSearchText] = useState("");
 
@@ -136,26 +133,6 @@ export const Games: React.FC = () => {
 
   const closeModal = () => {
     setShowModal(false);
-  };
-
-  const nextPage = () => {
-    let changePage = parseInt(page);
-    let newPage = ++changePage;
-    let newPageToString = newPage.toString();
-    setPage(newPageToString);
-    getGames();
-  };
-
-  const backPage = () => {
-    if (page === "1") {
-      alert("this is the first page");
-    } else {
-      let changePage = parseInt(page);
-      let newPage = --changePage;
-      let newPageToString = newPage.toString();
-      setPage(newPageToString);
-      getGames();
-    }
   };
 
   const loadMoreGames = (event: any) => {
