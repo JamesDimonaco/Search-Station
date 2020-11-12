@@ -72,7 +72,9 @@ export const Games: React.FC = () => {
                     <IonCardTitle>{game.name}</IonCardTitle>
                     <IonCardTitle> platform: {game.platforms}</IonCardTitle>
                     <IonCardSubtitle>
-                      {ReactHtmlParser(game.description.slice(0, 500)) + "..."}
+                      {ReactHtmlParser(
+                        game.description.slice(0, 500) + "......."
+                      )}
                     </IonCardSubtitle>
                   </IonCardHeader>
                   <IonCardContent>
@@ -103,7 +105,9 @@ export const Games: React.FC = () => {
                     <IonCardTitle>{game.name}</IonCardTitle>
                     <IonCardTitle> platform: {game.platforms}</IonCardTitle>
                     <IonCardSubtitle>
-                      {ReactHtmlParser(game.description.slice(0, 500)) + "..."}
+                      {ReactHtmlParser(
+                        game.description.slice(0, 500) + "......."
+                      )}
                     </IonCardSubtitle>
                   </IonCardHeader>
                   <IonCardContent>
@@ -200,7 +204,8 @@ export const Games: React.FC = () => {
               </IonButton>
               <h1>{modalContent?.name}</h1>
               <IonImg className="img" src={modalContent?.covers.service_url} />
-              {ReactHtmlParser(modalContent ? modalContent.description : "")}
+              {ReactHtmlParser(modalContent ? modalContent.description : " ")}
+
               <h2>
                 Trophy Section <IonIcon icon={trophy} />
               </h2>
