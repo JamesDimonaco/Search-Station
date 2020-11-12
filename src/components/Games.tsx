@@ -17,11 +17,13 @@ import {
   IonInfiniteScroll,
   IonInfiniteScrollContent,
   IonTitle,
+  IonIcon,
 } from "@ionic/react";
 import "./Games.css";
 import React, { useState } from "react";
 import axios from "axios";
 import ReactHtmlParser from "react-html-parser";
+import { trophy } from "ionicons/icons";
 
 interface IGame {
   platforms: string;
@@ -29,6 +31,10 @@ interface IGame {
   description: string;
   name: string;
   covers: { service_url: string };
+  has_trophies: boolean;
+  bronze: number;
+  silver: number;
+  gold: number;
 }
 
 export const Games: React.FC = () => {
@@ -45,7 +51,7 @@ export const Games: React.FC = () => {
     getGames();
   });
 
-  const getGames = (event?: any) => {
+  const getGames = (event?: any, searchEvent?: any) => {
     const url = `https://games.directory/api/v1/play_station/games?&page=${page}`;
 
     if (event) {
@@ -54,6 +60,8 @@ export const Games: React.FC = () => {
         method: "GET",
       })
         .then((response) => {
+          console.log(response.data.games);
+
           setGames((games) => [
             ...games,
             response.data.games.map((game: IGame) => (
@@ -64,7 +72,7 @@ export const Games: React.FC = () => {
                     <IonCardTitle>{game.name}</IonCardTitle>
                     <IonCardTitle> platform: {game.platforms}</IonCardTitle>
                     <IonCardSubtitle>
-                      {ReactHtmlParser(game.description.slice(0, 500))}
+                      {ReactHtmlParser(game.description.slice(0, 500)) + "..."}
                     </IonCardSubtitle>
                   </IonCardHeader>
                   <IonCardContent>
@@ -78,7 +86,7 @@ export const Games: React.FC = () => {
           ]);
         })
         .catch(() => {
-          alert("error ");
+          alert("no games left");
         });
     } else {
       axios({
@@ -95,7 +103,7 @@ export const Games: React.FC = () => {
                     <IonCardTitle>{game.name}</IonCardTitle>
                     <IonCardTitle> platform: {game.platforms}</IonCardTitle>
                     <IonCardSubtitle>
-                      {ReactHtmlParser(game.description.slice(0, 500))}
+                      {ReactHtmlParser(game.description.slice(0, 500)) + "..."}
                     </IonCardSubtitle>
                   </IonCardHeader>
                   <IonCardContent>
@@ -108,6 +116,7 @@ export const Games: React.FC = () => {
             ))
           );
         })
+
         .catch(() => {
           alert("error ");
         });
@@ -117,7 +126,6 @@ export const Games: React.FC = () => {
     let newPageToString = newPage.toString();
     setPage(newPageToString);
   };
-  console.log(games);
 
   const openModal = (game: IGame) => {
     setModalContent({
@@ -126,6 +134,10 @@ export const Games: React.FC = () => {
       platforms: game.platforms,
       id: game.id,
       covers: game.covers,
+      has_trophies: game.has_trophies,
+      bronze: game.bronze,
+      silver: game.silver,
+      gold: game.gold,
     });
 
     setShowModal(true);
@@ -146,8 +158,14 @@ export const Games: React.FC = () => {
     }, 1000);
   };
 
+  // const manageSearch = (event: any) => {
+  //   let searchEvent = event.detail.value;
+  //   setSearchText(event.detail.value);
+  //   getGames(searchEvent);
+  // };
+
   return (
-    <div className="">
+    <div>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Welcome to Search Station</IonTitle>
@@ -156,8 +174,10 @@ export const Games: React.FC = () => {
         <IonToolbar>
           <IonSearchbar
             placeholder="Search PS4 Games"
+            debounce={500}
             value={searchText}
-            onIonChange={(e) => setSearchText(e.detail.value!)}
+            // onIonChange={(event) => manageSearch(event)}
+            animated
             showCancelButton="focus"
           ></IonSearchbar>
         </IonToolbar>
@@ -179,9 +199,22 @@ export const Games: React.FC = () => {
                 READ LESS
               </IonButton>
               <h1>{modalContent?.name}</h1>
-
               <IonImg className="img" src={modalContent?.covers.service_url} />
               {ReactHtmlParser(modalContent ? modalContent.description : "")}
+              <h2>
+                Trophy Section <IonIcon icon={trophy} />
+              </h2>
+              {modalContent?.bronze
+                ? "This game has " + modalContent.bronze + " Bronze trophies "
+                : "This Game has no trophies"}
+              <br />
+              {modalContent?.silver
+                ? "This game has " + modalContent.silver + " Sliver trophies "
+                : ""}
+              <br />
+              {modalContent?.gold
+                ? "This game has " + modalContent.gold + " Gold trophies "
+                : ""}
             </IonContent>
           </IonModal>
         </IonList>
